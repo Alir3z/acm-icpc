@@ -1,0 +1,64 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+#define pb push_back
+#define mp make_pair
+#define L first
+#define R second
+using namespace std;
+const int maxn = 1e3 + 1000;
+vector<int> v[maxn];
+bool mark[maxn],Max_M[maxn], b;
+int Mach_R[maxn] ,n , m ,Mach_L[maxn] ;
+vector<pair<int,int> > Max;
+pair<int,int> O[maxn];
+
+void dfs(int vert)
+{
+    mark[vert]=true;
+    for(int i = 0 ; i < v[vert].size() ; i ++ ){
+        int child = v[vert][i];
+        if(b)
+            return;
+        if ( Mach_R[child]== 0 )
+            Max.pb(mp(vert,child))  , b = true ;
+        else if(!mark[Mach_R[child]])
+            Max.pb(mp(vert,child))  , dfs(Mach_R[child]) ;
+    }
+    if(!b)
+        Max.pop_back();
+}
+void solve()
+{
+    for(int i = 1 ; i <= n ; i ++ )
+        if(!Max_M[O[i].R]){
+            for(int j = 0 ; j < maxn ; j ++ )
+                mark[j]=false;
+            Max.clear() , b = false;
+            dfs(O[i].R);
+            if(b){
+                for (int j = 0 ; j < Max.size() ; j ++ )
+                    Mach_R[Max[j].R]=Max[j].L , Mach_L[Max[j].L]=Max[j].R ;
+                Max_M [Max[0].L] = true ;
+            }
+        }
+    }
+
+main()
+{
+    cin>>n;
+    int num , r ;
+    for(int i = 1 ; i <= n ; i ++ )
+        cin>>O[i].L , O[i].L*=O[i].L , O[i].R = i ;
+    sort(O+1,O+1+n);
+    reverse(O+1,O+1+n);
+    for(int i = 1 ; i <= n ; i ++ ){
+        cin>>num;
+        for(int j = 1 ; j <= num ; j ++ )
+            cin>>r , v[i].pb(r);
+    }
+    solve();
+    cout<<endl;
+    for(int i = 1 ; i <= n ; i ++ )
+        cout<<Mach_L[i]<<endl;
+}
